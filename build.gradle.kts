@@ -27,6 +27,7 @@ dependencies {
     implementation("com.just-ai.jaicf:caila:$jaicf")
     implementation("com.just-ai.jaicf:telegram:$jaicf")
     implementation("com.just-ai.jaicf:mongo:$jaicf")
+
 }
 
 tasks {
