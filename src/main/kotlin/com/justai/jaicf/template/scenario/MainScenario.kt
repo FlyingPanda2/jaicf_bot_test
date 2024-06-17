@@ -2,8 +2,6 @@ package com.justai.jaicf.template.scenario
 
 import com.justai.jaicf.builder.Scenario
 import com.justai.jaicf.channel.telegram.telegram
-import com.justai.jaicf.context.manager.mongo.MongoBotContextManager
-import com.justai.jaicf.template.helloWorldBot
 import com.mongodb.client.MongoClients
 
 val HelloWorldScenario = Scenario {
