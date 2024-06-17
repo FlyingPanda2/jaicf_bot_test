@@ -1,58 +1,54 @@
 package com.justai.jaicf.template.scenario
 
-import com.justai.jaicf.activator.caila.caila
 import com.justai.jaicf.builder.Scenario
+import com.justai.jaicf.channel.telegram.telegram
+import com.justai.jaicf.context.manager.mongo.MongoBotContextManager
+import com.justai.jaicf.template.helloWorldBot
+import com.mongodb.client.MongoClients
 
-val mainScenario = Scenario {
-    state("start") {
+val HelloWorldScenario = Scenario {
+
+    val client = MongoClients.create("mongodb://localhost:27017")
+    val userCollection = client.getDatabase("database_for_tz").getCollection("users")
+
+    state("main") {
         activators {
             regex("/start")
-            intent("Hello")
-        }
-        action {
-            reactions.run {
-                image("https://media.giphy.com/media/ICOgUNjpvO0PC/source.gif")
-                sayRandom(
-                    "Hello! How can I help?",
-                    "Hi there! How can I help you?"
-                )
-                buttons(
-                    "Help me!",
-                    "How are you?",
-                    "What is your name?"
-                )
-            }
-        }
-    }
-
-    state("bye") {
-        activators {
-            intent("Bye")
         }
 
         action {
-            reactions.sayRandom(
-                "See you soon!",
-                "Bye-bye!"
-            )
-            reactions.image("https://media.giphy.com/media/EE185t7OeMbTy/source.gif")
+            val message = request.telegram?.message
+            reactions.telegram?.say("Здравствуйте ${message?.chat?.firstName}", listOf("Mini-app", "Заполнить анкету"))
         }
     }
-
-    state("smalltalk", noContext = true) {
+    state("mini-app"){
         activators {
-            anyIntent()
+            regex("Mini-app")
         }
 
-        action(caila) {
-            activator.topIntent.answer?.let { reactions.say(it) } ?: reactions.go("/fallback")
+        action {
+            reactions.telegram?.say("Запускаю...")
+            val users = userCollection.find()
+            for(user in users)
+                reactions.telegram?.say(user.toJson())
+
+
+
         }
     }
 
-    fallback {
-        reactions.sayRandom(
-            "Sorry, I didn't get that...",
-            "Sorry, could you repeat please?"
-        )
+    state("admin-panel") {
+        activators {
+            regex("/form")
+        }
+
+        action {
+//            userCollection.find({role: "admin"})
+//
+//            if()
+//                reactions.telegram?.say("Вы админ")
+//            else
+//                reactions.telegram?.say("${message?.chat?.username}")
+        }
     }
 }
